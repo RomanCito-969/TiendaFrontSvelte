@@ -1,35 +1,53 @@
 <script>
-    import { onMount } from "svelte";
-    import Buscar from "./Buscar.svelte";
+  import { getContext } from "svelte";
+  import { data } from "./store.js";
+  import { onMount } from "svelte";
+  import Buscar from "./Buscar.svelte";
+  import Articulo from "./Articulo.svelte";
+  import Boton from "./Boton.svelte";
 
-    let data = [];
-    let datosFiltrados = [];
-    let patron;
-    let getArticulos = async () => {
-        const response = await fetch(
-            "https://tiendabackend.fly.dev/api/articulos"
-        );
-        data = await response.json();
-    };
+  const URL = getContext("URL");
 
-    onMount(getArticulos);
+  let artInsertar = {};
+  let datosFiltrados = [];
+  let patron;
+  let getArticulos = async () => {
+    const response = await fetch(URL.articulos);
+    $data = await response.json();
+  };
 
-    $: datosFiltrados = data.filter((articulo) =>
-        RegExp(patron,"i").test(articulo.nombre)
-    );
+  onMount(getArticulos);
+
+  $: datosFiltrados = $data.filter((articulo) =>
+    RegExp(patron, "i").test(articulo.nombre)
+  );
 </script>
 
 <Buscar bind:busqueda={patron} />
 
 <h1>Esta en Articulo</h1>
 
-{#each datosFiltrados as articulo}
-    {articulo.nombre}
-    {articulo.precio} <br />
-    <hr />
-{/each}
+<Articulo bind:articulo={artInsertar}>
+  <Boton tipo="insertar" documento={artInsertar} />
+</Articulo>
 <hr />
-{patron}
+<section class="listaAticulos">
+  {#each datosFiltrados as articulo}
+    <div>
+      <Articulo {articulo}>
+        <br />
+        <Boton tipo="modificar" documento={articulo} />
+        <Boton tipo="eliminar" documento={articulo} />
+      </Articulo>
+    </div>
+  {/each}
+</section>
+<hr />
 
 <style>
+  .listaAticulos {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 5px;
+  }
 </style>
