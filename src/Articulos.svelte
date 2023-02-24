@@ -34,7 +34,7 @@
 <section class="listaAticulos">
   {#each datosFiltrados as articulo}
     <div>
-      <Articulo {articulo}>
+      <Articulo bind:articulo>
         <br />
         <Boton tipo="modificar" documento={articulo} />
         <Boton tipo="eliminar" documento={articulo} />
